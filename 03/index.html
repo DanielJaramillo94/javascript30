@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Scoped CSS Variables and JS</title>
+</head>
+<body>
+  <h2>Color the <span class='hl'>ghost</span>!</h2>
+
+  <div class="page-layout">
+    <div class="controls">
+  
+      <div class="body-controls">
+        <label for="body-color">Body</label>
+        <input id="body-color" type="color" name="body-color" value="#FF0066">
+      </div>
+  
+      <div class="pupil-controls">
+        <label for="pupil-color">Pupil</label>
+        <input id="pupil-color" type="color" name="pupil-color" value="#0055D4">
+      </div>
+  
+      <div class="pupil-controls">
+        <label for="eye-bg-color">Eye</label>
+        <input id="eye-bg-color" type="color" name="eye-bg-color" value="#FFFFFF">
+      </div>
+    </div>
+    
+    <div class="svg-container">
+      <svg version="1.1" id="body" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+     viewBox="0 0 500 500" style="enable-background:new 0 0 500 500;" xml:space="preserve">
+        <defs>
+          <path id="SVGID_1_" d="M434.3,222.5c-6.4,0-25.7,0-25.7,0v-83h-27.5v-27.8h-27.8V83.8c0,0-41.7,0-41.7,0V56.5H201.8v27.3h-55.3
+            c0,0,0,28.2,0,28.2h-28v28H91v83H63v206h27.7v-27.3c0,0,28.7,0,28.7,0c0-3.1,0-27.3,0-27.3h27.3v27.3h27c0,0.2,0,0.3,0,0.3v27h56
+            v-54.7H285V429h41.7c0,0,0-27,0-27h27v-27.7h28V402c0,0,27,0,27,0s0,27,0,27h27.7V222.5C436.3,222.5,435.6,222.5,434.3,222.5z"/>
+        </defs>
+        <use xlink:href="#SVGID_1_" class="body" style="overflow:visible;"/>
+        <clipPath id="SVGID_2_">
+          <use xlink:href="#SVGID_1_"  style="overflow:visible;"/>
+        </clipPath>
+        <g id="right-eye" class="st0">
+          <path id="eye_1_" class="eye-bg" d="M381.2,250.2c0,2.3,0,27.5,0,27.5H326V250h-27.8v-82.7H326v-27.8h55.2v27.8c0,0,27.5,0,27.5,0V250
+            c0,0-27.5,0-27.5,0S381.2,250.1,381.2,250.2z"/>
+          <rect x="353.4" y="194.8" class="pupil" width="55.3" height="55.3"/>
+        </g>
+        <g id="left-eye" class="st0">
+          <path id="eye" class="eye-bg" d="M229.2,250.2c0,2.3,0,27.5,0,27.5H174V250h-27.8v-82.7H174v-27.8h55.2v27.8c0,0,27.5,0,27.5,0V250
+            c0,0-27.5,0-27.5,0S229.2,250.1,229.2,250.2z"/>
+          <g id="left-pupil">
+            <rect x="201.4" y="194.8" class="pupil" width="55.3" height="55.3"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <!-- <div class="center-container">
+    </div> -->
+  </div>
+
+  <style>
+    .page-layout {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    :root {
+      --body-color: #FF0066;
+      --pupil-color: #0055D4;
+      --eye-bg-color: #FFFFFF;
+    }
+
+    .eye-bg {
+      fill: var(--eye-bg-color);
+    }
+
+    .pupil {
+      fill: var(--pupil-color);
+    }
+
+    .body {
+      fill: var(--body-color);
+    }
+
+    .svg-container {
+      width: 400px;
+      height: 400px;
+    }
+
+    .hl {
+      color: var(--body-color);
+    }
+
+    body {
+      text-align: center;
+      background: #1c1c1c;
+      color: white;
+      font-family: 'helvetica neue', sans-serif;
+      font-weight: 100;
+      font-size: 50px;
+    }
+
+    .controls {
+      margin-bottom: 50px;
+    }
+
+    input {
+      width: 100px;
+    }
+  </style>
+
+  <script>
+    const inputs = document.querySelectorAll('.controls input');
+
+    function handleUpdate() {
+      const suffix = this.dataset.sizing || '';
+      document.documentElement.style.setProperty(`--${this.name}`, this.value + suffix);
+    }
+
+    inputs.forEach(input => input.addEventListener('change', handleUpdate));
+    inputs.forEach(input => input.addEventListener('mousemove', handleUpdate));
+  </script>
+
+
+</body>
+</html>
