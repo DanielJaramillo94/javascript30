@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Type Ahead 👀</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <form class="search-form">
+    <input type="text" class="search" placeholder="Title of videogame">
+    <ul class="suggestions">
+      <li>search for videogames</li>
+      <li>Released from 2015 to 2020</li>
+    </ul>
+  </form>
+<script>
+const endpoint = 'https://danieljaramillo94.github.io/javascript30/06/games.json';
+
+const games = [];
+fetch(endpoint)
+  .then(blob => blob.json())
+  .then(data => games.push(...data));
+
+function findMatches(wordToMatch, games) {
+  return games.filter(game => {
+    const regex = new RegExp(wordToMatch, 'gi');
+    if(!game.Title)
+      game.Title = ''
+    return game.Title.match(regex)
+  });
+}
+
+function numberWithCommas(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function displayMatches() {
+  const matchArray = findMatches(this.value, games);
+  const html = matchArray.map(game => {
+    const regex = new RegExp(this.value, 'gi');
+    const gameTitle = game.Title.replace(regex, `<span class="hl">${this.value}</span>`);
+    return `
+      <li>
+        <span class="name">${gameTitle}</span>
+        <span class="population">${game['Platform(s)']}</span>
+      </li>
+    `;
+  }).join('');
+  suggestions.innerHTML = html;
+}
+
+const searchInput = document.querySelector('.search');
+const suggestions = document.querySelector('.suggestions');
+
+searchInput.addEventListener('change', displayMatches);
+searchInput.addEventListener('keyup', displayMatches);
+
+</script>
+  </body>
+</html>
