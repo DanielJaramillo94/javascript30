@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>HTML5 Canvas</title>
+</head>
+
+<body>
+  <div class="body-container">
+
+    <div class="canvas-container" style="position: relative;">
+      <img id="imgCanvas" style="position: absolute; left: 0; top: 0; z-index: 1; background-image: url('img/todd.png');"/>
+      <canvas id="draw" width="100" height="100" 
+        style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
+     </div>
+
+    <div class="cockpit">
+      <div class="color">
+        <label for="body-color"> Select color: </label>
+        <input id="body-color" type="color" name="color" value="#FF0066" onchange="colorChanged(this.value)">
+      </div>
+      
+      <div class="thickness">
+        <span>Select thickness</span>
+        <div class="thickness-input-container">
+          <input type="radio" id="thickness1" name="thickness" value="1" checked="checked" onchange="thicknessChanged(this.value)">
+          <label for="thickness1">1</label><br>
+          <input type="radio" id="thickness2" name="thickness" value="2" onchange="thicknessChanged(this.value)">
+          <label for="thickness2">2</label><br>
+          <input type="radio" id="thickness3" name="thickness" value="3" onchange="thicknessChanged(this.value)">
+          <label for="thickness3">3</label>
+          <input type="radio" id="thickness4" name="thickness" value="4" onchange="thicknessChanged(this.value)">
+          <label for="thickness3">4</label>
+          <input type="radio" id="thickness5" name="thickness" value="10" onchange="thicknessChanged(this.value)">
+          <label for="thickness3">10</label>
+          <input type="radio" id="thickness6" name="thickness" value="40" onchange="thicknessChanged(this.value)">
+          <label for="thickness3">40</label>
+        </div>
+      </div>
+
+      <div class="character">
+        <span>Select character</span>
+        <div class="character-input-container">
+          <input type="radio" id="character1" name="character" value="todd" checked="checked" onchange="characterChanged(this.value)">
+          <label for="character1">Todd</label><br>
+          <input type="radio" id="character2" name="character" value="sonic" onchange="characterChanged(this.value)">
+          <label for="character2">Sonic</label><br>
+          <input type="radio" id="character3" name="character" value="tiles" onchange="characterChanged(this.value)">
+          <label for="character3">Tiles</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+<style>
+
+  .body-container {
+    display: flex;
+    height: 100vh;
+  }
+
+  #imgCanvas {
+    width: 100%;
+    height: 100%;
+    background: no-repeat center;
+    background-size: contain;
+  }
+
+  .canvas-container {
+    flex-grow: 5;
+    height: 100vh;
+  }
+
+  canvas {
+    width: 100%;
+    height: 100%;
+  }
+
+  .cockpit {
+    background-color: #787878;
+    flex-grow: 1;
+    min-width: 150px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .cockpit > div {
+    margin-top: 20px;
+  }
+
+    .thickness-input-container {
+      display: flex;
+    }
+
+  html,
+  body {
+    margin: 0;
+    flex-grow: 1;
+  }
+</style>
+
+
+<script>
+  const colorSelector = document.querySelector('.options-container');
+
+  const canvas = document.querySelector('#draw');
+  const ctx = canvas.getContext('2d');
+  const parent = document.querySelector('.canvas-container');
+  canvas.width = parent.offsetWidth;
+  canvas.height = parent.offsetHeight;
+  ctx.strokeStyle = '#BADA55';
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  ctx.lineWidth = 5;
+
+  const imgCanvas = document.querySelector('#imgCanvas');
+
+
+  let color = "#FF0066"
+  let character = "todd"
+  let isDrawing = false;
+  let lastX = 0;
+  let lastY = 0;
+  let hue = 0;
+  let direction = true;
+
+  function draw(e) {
+    if (!isDrawing) return; // stop the fn from running when they are not moused down
+    ctx.strokeStyle = color;
+    ctx.beginPath();
+    // start from
+    ctx.moveTo(lastX, lastY);
+    // go to
+    ctx.lineTo(e.offsetX, e.offsetY);
+    ctx.stroke();
+    [lastX, lastY] = [e.offsetX, e.offsetY];
+  }
+
+  function colorChanged(newColor) {
+    color = newColor;
+  }
+
+  function thicknessChanged(thickness) {
+    ctx.lineWidth = thickness*5;
+  }
+
+  function characterChanged(character) {
+    const img = document.getElementById('imgCanvas');
+    img.style.backgroundImage = `url("img/${character}.png")`
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  
+  imgCanvas.addEventListener('mousedown', (e) => {
+    isDrawing = true;
+    [lastX, lastY] = [e.offsetX, e.offsetY];
+  });
+
+  imgCanvas.addEventListener('mousemove', draw);
+  imgCanvas.addEventListener('mouseup', () => isDrawing = false);
+  imgCanvas.addEventListener('mouseout', () => isDrawing = false);
+
+</script>
+
+
+</html>
