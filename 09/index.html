@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Console Tricks!</title>
+</head>
+<body>
+
+  <p onClick="makeGreen()">×Long live to software!×</p>
+
+  <script>
+    let p = document.querySelector('p');
+
+    function makeGreen() {
+      p.style.color = '#BADA55';
+      p.style.fontSize = '50px';
+    }
+
+    // Regular
+    console.log("This is a regular output");
+
+    // Interpolated
+    console.log('This is an %s string!', 'INTERPOLATED');
+
+    // Styled
+    console.log('%c I really likes how red looks over dark :)', 'font-size:50px; background:black; color: red; font-weight: bolder;');
+
+    // warning!
+    console.warn('Do not panic! This is just a warning example (:');
+
+    // Error :|
+    console.error('But this may escalate quickly to an error... nah, just kidding');
+
+    // Info
+    console.info("Any info? Hummm... ah! Here you have: this is the 9th day of the JS challenges! But thats kinda obvius, isn't?");
+
+    // Testing
+    console.assert(false, 'This message shall appear!');
+    console.assert(true, 'This message shall disappear!');
+
+    // clearing
+    //console.clear(); // Here I place the line, but reality is I don't wanna clear the console, sorry not sorry!
+
+    // Viewing DOM Elements
+    console.log(p);
+
+    // Grouping together
+    console.group('Hello');
+    console.groupCollapsed('It is a pleasure to say hello');
+    console.log('But goodbye');
+    console.groupEnd();
+    console.groupEnd();
+
+    // counting
+    console.count('How many times is this logged?')
+    for (let index = 0; index < 5; index++) {
+      console.count('How many times is this logged?')
+    }
+
+    // timing
+    console.time('Calling promise');
+    let promise = new Promise((resolve, reject) => {
+      setTimeout(()=> {
+        resolve('This is resolved')
+      }, 3000);
+    });
+
+    promise.then(() => {
+      console.timeEnd('Calling promise');
+    })
+
+    // table
+    const chars = [{ name: 'San Andreas', year: 2004 }, { name: 'Vice City', year: 2002 }, { name: 'GTA V', year: 2013 }];
+    console.table(chars);
+
+  </script>
+</body>
+</html>
