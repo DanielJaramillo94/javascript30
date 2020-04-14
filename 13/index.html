@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+</head>
+<body>
+
+  <div class="site-wrap">
+
+    <div class="title">
+      <span>Who will win this battle?</span>
+    </div>
+
+    <div class="contenders-wrapper">
+      <div class="contenders">
+        <div class="contender">
+          <img src="kratos.png" class="charImg align-left slide-in">
+          <span id="kratos-text" class="align-right slide-in">Kratos</span>
+        </div>
+        
+        <div class="contender-inverse">
+          <img src="dante.png" class="charImg align-right slide-in">
+          <span id="dante-text" class="align-left slide-in">Dante</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="fightImg">
+      <img src="fight.png" class="charImg align-left slide-in" id="fight">
+    </div>
+
+  </div>
+
+  <audio src="fight.mp3"></audio>
+
+  <script>
+    function debounce(func, wait = 20, immediate = true) {
+      var timeout;
+      return function() {
+        var context = this, args = arguments;
+        var later = function() {
+          timeout = null;
+          if (!immediate) func.apply(context, args);
+        };
+        var callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) func.apply(context, args);
+      };
+    };
+
+    const sliderImages = document.querySelectorAll('.slide-in');
+
+    let imageBottom_aux;
+    let isHalfShown_aux;
+
+    function checkSlide() {
+      sliderImages.forEach(sliderImage => {
+        // half way through the image
+        const slideInAt = (window.scrollY + window.innerHeight) - sliderImage.height / 2;
+        
+        // bottom of the image
+        let imageBottom = sliderImage.offsetTop + sliderImage.height;
+        if (sliderImage.tagName === 'SPAN') imageBottom = imageBottom_aux
+        else   imageBottom_aux = imageBottom
+        
+        let isHalfShown = slideInAt > sliderImage.offsetTop;
+        if (sliderImage.tagName === 'SPAN') isHalfShown = isHalfShown_aux
+        else isHalfShown_aux = isHalfShown
+
+        const isNotScrolledPast = window.scrollY < imageBottom;
+        if (isHalfShown && isNotScrolledPast) {
+          sliderImage.classList.add('active');
+          if(sliderImage.id === 'fight') {
+            const audio = document.querySelector(`audio`);
+            audio.play()
+          }
+          
+        } else {
+          sliderImage.classList.remove('active');
+        }
+      });
+    }
+
+    window.addEventListener('scroll', debounce(checkSlide));
+
+  </script>
+
+  <style>
+
+    @font-face {
+      font-family: 'mortal';
+      src: url(./fonts/mortal.ttf);
+    }
+
+    @font-face {
+      font-family: 'gow';
+      src: url(./fonts/gow.ttf);
+    }
+
+    @font-face {
+      font-family: 'devil';
+      src: url(./fonts/devil.ttf);
+    }
+
+    .title {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .fightImg {
+      width: 100%;
+      height: 60vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .fightImg > img {
+      height: 160px;
+      margin-bottom: 10px;
+    }
+    .title > span {
+      font-size: 4em;
+      font-family: 'mortal';
+    }
+    .contenders-wrapper {
+      height: 100vh;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+    .contenders {
+      display: flex;
+      flex-direction: column;
+    }
+    .contender {
+      display: flex;
+      width: 60%;
+      height: 50%;
+      align-items: center;
+    }
+    .contender-inverse {
+      display: flex;
+      flex-direction: row-reverse;
+      width: 60%;
+      height: 50%;
+      align-items: center;
+      align-self: flex-end;
+    }
+
+    .charImg {
+      width: 50%;
+      height: 100%;
+    }
+
+    #kratos-text {
+      font-size: 5em;
+      margin-left: 10px;
+      font-family: 'gow';
+    }
+    #dante-text {
+      font-size: 5em;
+      margin-left: 10px;
+      font-family: 'devil';
+    }
+
+    html {
+      box-sizing: border-box;
+      background: #383838;
+      font-size: 20px;
+      font-weight: 200;
+      color: white;
+    }
+    
+    body {
+      margin: 0;
+      overflow-x: hidden;
+    }
+    
+    *, *:before, *:after {
+      box-sizing: inherit;
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    .site-wrap {
+      text-align: justify;
+    }
+
+    .align-right {
+      float: right;
+      margin-left: 20px;
+    }
+
+    .slide-in {
+      opacity: 0;
+      transition: all .5s;
+    }
+
+    .align-left.slide-in {
+      transform: translateX(-30%) scale(0.95);
+    }
+    
+    .align-right.slide-in {
+      transform: translateX(30%) scale(0.95);
+    }
+
+    .slide-in.active {
+      opacity: 1;
+      transform: translateX(0%) scale(1);
+    }
+
+  </style>
+
+</body>
+</html>
