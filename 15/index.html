@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LocalStorage</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="simon-container">
+    <div data-simon="1" class="simon-item"></div>
+    <div data-simon="2" class="simon-item"></div>
+    <div data-simon="3" class="simon-item"></div>
+    <div data-simon="4" class="simon-item"></div>
+  </div>
+
+  <audio data-sound="1" src="sounds/bttf.wav"></audio>
+  <audio data-sound="2" src="sounds/mario1.wav"></audio>
+  <audio data-sound="3" src="sounds/mario2.wav"></audio>
+  <audio data-sound="4" src="sounds/po.wav"></audio>
+
+  <audio data-sound="losted" src="sounds/roblox.wav"></audio>
+</body>
+<style>
+
+  :root {
+    --color1: tomato;
+    --color2: #56eb34;
+    --color3: #34aeeb;
+    --color4: #e5eb34;
+    --active-color: transparent;
+  }
+
+  html {
+    height: 100vh;
+    background-color: #6b6b6b;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .simon-container {
+    display: grid;
+    width: fit-content;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 1px 1px;
+  }
+
+  .simon-item {
+    width: 150px;
+    height: 150px;
+    background-color: snow;
+  }
+
+  [data-simon="1"] {
+    background-color: var(--color1);
+  }
+  [data-simon="2"] {
+    background-color: var(--color2)
+  }
+  [data-simon="3"] {
+    background-color: var(--color3);
+  }
+  [data-simon="4"] {
+    background-color: var(--color4);
+  }
+
+  .item-active {
+    transform: scale(1.05);
+    box-shadow: 0px 0px 20px 8px var(--active-color);
+  }
+
+
+</style>
+<script>
+  console.log('¡Este Simón Dice hace uso del almacenamiento local para guardar la última ronda que Simón haya dicho!');
+  
+
+  const lostedAudio = document.querySelector(`audio[data-sound="losted"]`);
+  const simonSounds = [
+    document.querySelector(`audio[data-sound="1"]`),
+    document.querySelector(`audio[data-sound="2"]`),
+    document.querySelector(`audio[data-sound="3"]`),
+    document.querySelector(`audio[data-sound="4"]`),
+  ]
+
+  let playerTime = false;
+
+  let simonUserClicks = [];
+  let clickedTimes = 0;
+
+  const root = document.documentElement;
+  const simonList = document.querySelectorAll('.simon-item');
+
+  simonList.forEach(element => {
+    element.addEventListener('click', simonClick);
+
+    element.onmouseover = simonMouseOver;
+    element.onmouseout  = simonMouseOut;
+  });
+
+  function getElementColor(elementNumber) {
+    return getComputedStyle(root).getPropertyValue(`--color${elementNumber}`);    
+  }
+
+  function simonClick(e) {
+    if (!playerTime) return
+    simonUserClicks.push(parseInt(e.target.dataset.simon));
+    clickedTimes++;
+  }
+
+  function simonMouseOver(e) {
+    if (!playerTime) return
+    const element = e.toElement
+    activateSimonElement(element);
+  }
+
+  function simonMouseOut(e) {
+    if (!playerTime) return
+    const element = e.target;
+    element.classList.remove("item-active");
+    deactivateSimonElement(element);
+  }
+
+  function activateSimonElement(simonElement) {
+    const elementColor = getElementColor(simonElement.dataset.simon)
+    root.style.setProperty('--active-color', elementColor);
+    simonElement.classList.add("item-active");
+  }
+
+  function deactivateSimonElement(simonElement) {
+    simonElement.classList.remove("item-active");
+  }
+
+  function getSimonElementFromNumber(numberSimonElement) {
+    return document.querySelectorAll('[data-simon]')[numberSimonElement-1];
+  }
+
+  function playSound(simonElement) {
+    if (!simonElement) return;
+    
+    let soundElement = simonSounds[simonElement.dataset.simon - 1];
+    soundElement.currentTime = 0;
+    soundElement.play();
+  }
+
+  function playSimonElement(simonElement) {
+    activateSimonElement(simonElement);
+    playSound(simonElement);
+    
+    return new Promise(resolve => {
+      setTimeout(_ => {
+        deactivateSimonElement(simonElement);
+        setTimeout(_ => {
+          resolve('Simon element played :)');
+        }, 100);
+      }, 500);
+    })
+  }
+
+  function generateSimonRound(roundLength) {
+    let generatedRound = []
+    for (let index = 0; index < roundLength; index++) {
+      const simonActive = Math.floor(Math.random() * 4) + 1;
+      generatedRound.push(simonActive);
+    }
+    return generatedRound;
+  }
+
+  function userHasClicked() {
+    return new Promise((resolve, reject) => {
+      window.addEventListener('click',e => {
+          resolve('User clicked!');
+      }, {once: true});
+    });
+  }
+  
+  window.addEventListener('click',e => {
+      bootSimon();
+  }, {once: true});
+
+  
+  // const items = JSON.parse(localStorage.getItem('items')) || [];
+  // localStorage.setItem('items', JSON.stringify(items));
+
+
+  async function bootSimon() {
+    let playerHasLosted = false;
+    let roundLength = 3;
+    let generatedRound;
+    let generate = true;
+
+    const generatedRound_local = JSON.parse(localStorage.getItem('sounds-round')) || [];
+
+    if(generatedRound_local.length !== 0) {
+      generatedRound = generatedRound_local;
+      roundLength = generatedRound.length;
+      generate = false;
+      console.log(generatedRound);
+    }
+
+    while(!playerHasLosted) {
+      if (generate) {
+        generatedRound = generateSimonRound(roundLength);
+      } else {
+        generate = true
+      }
+      console.log(generatedRound);
+      
+      localStorage.setItem('sounds-round', JSON.stringify(generatedRound))
+      for (let index = 0; index < roundLength; index++) {
+        const w = await playSimonElement(getSimonElementFromNumber(generatedRound[index]));
+      }
+
+      playerTime = true;
+      let userFinished = false;
+
+      do {
+        let userClicked = await userHasClicked();
+        if (userClicked) {
+          if (simonUserClicks[clickedTimes-1] != generatedRound[clickedTimes-1]) {
+            playerHasLosted = true;
+            console.log('You lost!');
+            if (!lostedAudio) return;
+            lostedAudio.currentTime = 0;
+            lostedAudio.play();
+            localStorage.setItem('sounds-round', null)
+          } else {
+            playSound(getSimonElementFromNumber(simonUserClicks[clickedTimes-1]));
+          }
+          if (clickedTimes === roundLength)
+            userFinished = true;
+        }
+      } while (!userFinished && !playerHasLosted);
+
+      simonUserClicks = [];
+      clickedTimes = 0;
+      roundLength++;
+      playerTime = false;
+
+      simonList.forEach(element => {
+        deactivateSimonElement(element);
+      });
+
+      await new Promise (resolve => {
+        setTimeout(_ => {
+          resolve('Ready to next round');
+        }, 1000);
+      })
+    }
+  }
+
+  // bootSimon();
+</script>
+</html>
+
