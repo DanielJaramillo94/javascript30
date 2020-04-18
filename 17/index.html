@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sort Without Articles</title>
+</head>
+<body>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background-color: #3d3d3d;
+      display: flex;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    #videogames {
+      list-style: inside square;
+      font-size: 20px;
+      background: white;
+      width: 500px;
+      margin: auto;
+      padding: 0;
+      box-shadow: 0 0 0 20px rgba(0, 0, 0, 0.05);
+    }
+    
+    #videogames li {
+      border-bottom: 1px solid #efefef;
+      padding: 20px;
+    }
+    
+    #videogames li:last-child {
+      border-bottom: 0;
+    }
+
+    a {
+      color: #ffc600;
+      text-decoration: none;
+    }
+
+  </style>
+
+  <ul id="videogames"></ul>
+
+<script>
+
+const videogames = ["Duke Nukem 3D: Megaton Edition", "Woah Dave!", "Warhammer Quest", "Chariot", "Sword of Asumi", "Funk of Titans", "Atelier Ayesha Plus: The Alchemist of Dusk", "Brandish: The Dark Revenant", "Joe Danger 2: The Movie", "Tengami"]
+
+function upper(gameName) {
+  return gameName.toUpperCase();
+}
+
+const sortedGames = videogames.sort();
+const upperVideoGames = videogames.map(game => upper(game));
+
+document.querySelector('#videogames').innerHTML =
+upperVideoGames
+    .map(game => `<li>${game}</li>`)
+    .join('');
+
+console.log('Whoa, this challenge was quite easy. Hopefully tomorrow there will be a better one.');
+
+</script>
+
+</body>
+</html>
