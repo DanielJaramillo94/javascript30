@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JS Game Sounds</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div style="
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;">
+    
+    <span style="
+    color: whitesmoke;
+    font-size: 5em;
+    padding: 50px;
+    color: #8a8a8a;
+    max-width: 70vw;"
+    id="title-notes">Click anywhere to start!</span>
+  
+    <div class="keys">
+      <div class="element-container">
+        <span>1</span>
+        <div data-key="87" class="alien key" style="background-image: url(aliens/alien_red.png);">
+        </div>
+      </div>
+      <div class="element-container">
+        <span>2</span>
+        <div data-key="65" class="alien key" style="background-image: url(aliens/alien_orange.png);">
+        </div>
+      </div>
+      <div class="element-container">
+        <span>3</span>
+        <div data-key="83" class="alien key" style="background-image: url(aliens/alien_yellow.png);">
+        </div>
+      </div>
+      <div class="element-container">
+        <span>4</span>
+        <div data-key="68" class="alien key" style="background-image: url(aliens/alien_palegreen.png);">
+        </div>
+      </div>
+      
+      <div class="element-container">
+        <span>5</span>
+        <div data-key="38" class="alien key" style="background-image: url(aliens/alien_green.png);">
+        </div>
+      </div>
+      <div class="element-container">
+        <span>6</span>
+        <div data-key="37" class="alien key" style="background-image: url(aliens/alien_lightblue.png);">
+        </div>
+      </div>
+      <div class="element-container">
+        <span>7</span>
+        <div data-key="40" class="alien key" style="background-image: url(aliens/alien_blue.png);">
+        </div>
+      </div>
+      <div class="element-container">
+        <span>8</span>
+        <div data-key="39" class="alien key" style="background-image: url(aliens/alien_purple.png);">
+        </div>
+      </div>
+      
+      <div class="element-container">
+        <span>9</span>
+        <div data-key="13" class="alien key" style="background-image: url(aliens/alien_pink.png);">
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <audio data-key="87" src="sounds/wololo.wav"></audio>
+  <audio data-key="65" src="sounds/fatality.wav"></audio>
+  <audio data-key="83" src="sounds/heavyMachine.wav"></audio>
+  <audio data-key="68" src="sounds/portalGun.wav"></audio>
+
+  <audio data-key="38" src="sounds/snakeCall.wav"></audio>
+  <audio data-key="37" src="sounds/timeToKill.wav"></audio>
+  <audio data-key="40" src="sounds/oof.wav"></audio>
+  <audio data-key="39" src="sounds/methalefs.wav"></audio>
+
+  <audio data-key="13" src="sounds/castlevania.wav"></audio>
+
+<script>
+  function removeTransition(e) {
+    if (e.propertyName !== 'transform') return;
+    e.target.classList.remove('playing');
+  }
+
+  function playSound(keyCode) {
+    const audio = document.querySelector(`audio[data-key="${keyCode}"]`);
+    const key = document.querySelector(`div[data-key="${keyCode}"]`);
+    if (!audio) return;
+
+    key.classList.add('playing');
+    audio.currentTime = 0;
+    audio.play();
+  }
+
+  const keys = Array.from(document.querySelectorAll('.key'));
+  keys.forEach(key => key.addEventListener('transitionend', removeTransition));
+
+  window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let soundsMap = [87, 65, 83, 68, 38, 37, 40, 39, 13];
+  const text = document.querySelector(`#title-notes`);
+
+  const recognition = new SpeechRecognition();
+  recognition.interimResults = true;
+  recognition.lang = 'en-US';
+  
+  let word = '';
+
+  recognition.addEventListener('result', e => {
+    const transcript = Array.from(e.results)
+      .map(result => result[0])
+      .map(result => result.transcript)
+      .join('');
+
+      word = transcript;
+
+  });
+
+  recognition.addEventListener('end', () => {
+    let keyCode = soundsMap[parseInt(word)-1];
+    playSound(keyCode);
+    if (!keyCode) {
+      if (word === '') {
+        word = 'something';
+      }
+      text.innerHTML = `Huh :/ ... did you say ${word}? Please try again and say a number from 1 to 9!`;
+    }
+    else {
+      text.innerHTML = `Perfect, try again!`;
+    }
+    word = '';
+    recognition.start();
+  });
+
+  window.addEventListener('click', () => {
+    text.innerHTML = 'Perfect! Now, give permission to use the mic on this page and then say a number';
+    recognition.start();
+  }, {once: true});
+  
+
+</script>
+
+
+</body>
+</html>
