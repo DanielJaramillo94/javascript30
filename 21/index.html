@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>🌎 Geolocation</title>
+</head>
+
+<body>
+  <div class="body-container">
+
+    <div class="canvas-container" style="position: relative;">
+      <canvas id="draw" width="100" height="100" 
+        style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
+      <img id="imgCanvas" style="position: absolute; left: 0; top: 0; z-index: 0; background-image: url('img/map.jpg');"/>
+     </div>
+
+    <div class="cockpit">
+
+      <span style="max-width: 80%; color: whitesmoke;">Allow the location system get your spanosition to see where you are</span>
+      <span style="max-width: 80%; color: whitesmoke;">Press enter when you fill in the latitude and longitude</span>
+      <div class="coord">
+        <span>Latitude</span>
+        <input type="text" id="latitude" onkeydown="changeCoords(this)">
+        <span>Longitude</span>
+        <input type="text" id="longitude" onkeydown="changeCoords(this)">
+      </div>
+      <span style="max-width: 80%; color: whitesmoke;">This was a really <sspanan style="color: rgb(255, 120, 71);">hard challenge</sspanan>, and I was not even close to get a decent accuracy!</span>
+      <span style="max-width: 80%; color: whitesmoke;">You can find why this is not that trivial to imspanlement reading the following info</span>
+      <div style="display: flex; flex-direction: column; max-width: 90%">
+        <span style="max-width: 80%;"><a href="httspan://www.movable-tyspane.co.uk/scrispants/latlong.html">Calculate distance, bearing and more between Latitude/Longitude spanoints</a></span>
+        <span style="max-width: 80%;"><a href="httspans://en.wikispanedia.org/wiki/Haversine_formula">Haversine formula</a></span>
+        <span style="max-width: 80%;"><a href="httspans://es.wikispanedia.org/wiki/WGS84">World Geodetic System 1984</a></span>
+        <span style="max-width: 80%;"><a href="httspans://es.wikispanedia.org/wiki/Sistema_de_coordenadas_universal_transversal_de_Mercator">Sistema de coordenadas universal transversal de Mercator</a></span>
+      </div>
+      </div>
+  </div>
+
+</body>
+<style>
+
+  .coord {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .body-container {
+    display: flex;
+    height: 100vh;
+  }
+
+  #imgCanvas {
+    width: 100%;
+    height: 100%;
+    background: no-repeat center;
+    background-size: contain;
+  }
+
+  .canvas-container {
+    flex-grow: 5;
+    height: 100vh;
+  }
+
+  canvas {
+    width: 100%;
+    height: 100%;
+  }
+
+  .cockpit {
+    background-color: #7b7b7b;
+    flex-grow: 1;
+    min-width: 150px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 320px;
+  }
+
+  .cockpit > div {
+    margin-top: 20px;
+  }
+
+    .thickness-input-container {
+      display: flex;
+    }
+
+  html,
+  body {
+    margin: 0;
+    flex-grow: 1;
+  }
+</style>
+
+
+<script>
+  const colorSelector = document.querySelector('.options-container');
+
+  const canvas = document.querySelector('#draw');
+  const ctx = canvas.getContext('2d');
+  const parent = document.querySelector('.canvas-container');
+  canvas.width = parent.offsetWidth;
+  canvas.height = parent.offsetHeight;
+  ctx.strokeStyle = '#BADA55';
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  ctx.lineWidth = 2;
+
+  let x = 0;
+  let y = 0;
+
+  const imgCanvas = document.querySelector('#imgCanvas');
+
+  function drawPoint(x, y) {
+    ctx.beginPath();
+    let radius = 10 * canvas.width/1146;
+    let startAngle = 0;
+    let endAngle = 2*Math.PI;
+    let anticlockwise  = true;
+    ctx.strokeStyle = 'red';
+  
+    ctx.arc(x, y, radius, startAngle, endAngle, anticlockwise);
+    ctx.stroke();
+    
+  }
+
+  function getDistance(lat, lon) {
+
+    const lat1 = 0;
+    const lon1 = 0;
+
+    const R = 6371e3; // metres
+    const φ1 = toRadians(lat1);
+    const φ2 = toRadians(lat);
+    const Δφ = toRadians(lat-lat1);
+    const Δλ = toRadians(lon-lon1);
+
+    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+            Math.cos(φ1) * Math.cos(φ2) *
+            Math.sin(Δλ/2) * Math.sin(Δλ/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+    return R * c;
+  }
+
+  function getBearing(lat, lon) {
+    const λ1 = 0;
+    const φ1 = 0;
+
+    const λ2 = toRadians(lon);
+    const φ2 = toRadians(lat);
+
+    const y = Math.sin(λ2-λ1) * Math.cos(φ2);
+    const x = Math.cos(φ1)*Math.sin(φ2) -
+    Math.sin(φ1)*Math.cos(φ2)*Math.cos(λ2-λ1);
+    return toDegrees(Math.atan2(y, x));
+  }
+
+  function toRadians(n)  { return n * Math.PI / 180; };
+  function toDegrees(n) { return n * 180 / Math.PI; };
+
+  function getDegreesFromBearing(bearing) {
+    if (bearing <= 0)
+      return bearing * -1 + 90
+    if (bearing > 0 && bearing<=90)
+      return 90 - bearing
+    if (bearing > 90 && bearing<=180)
+      return 450 - bearing
+  }
+
+  function setOrigin(params) {
+    console.log(canvas.width, canvas.height);
+    x = canvas.width * 460/1146;
+    y = canvas.height * 390/726;
+  }
+
+  function getOrigin(params) {
+    // return [460, 390];
+    return [x, y];
+  }
+
+  function getXY(lat, lon) {
+    let [x, y] = getOrigin();
+    const distance = getDistance(lat, lon);
+    const degrees = getDegreesFromBearing(getBearing(lat, lon));
+    const moveX = Math.cos(toRadians(degrees)) * distance;
+    const moveY = Math.sin(toRadians(degrees)) * distance;
+
+    proportionConstantX = 0.0000305 * canvas.width/1146;
+    proportionConstantY = 0.0000323 * canvas.height/726;
+
+    return [
+      x + moveX * proportionConstantX, 
+      y - moveY * proportionConstantY
+    ];
+  }
+
+
+  function changeCoords(e) {
+    if(event.key === 'Enter') {
+      const latitude = document.querySelector('#latitude').value;
+      const longitude = document.querySelector('#longitude').value;
+
+      const [x, y] = getXY(latitude, longitude);
+      drawPoint(x, y);
+    }
+  }
+
+  setOrigin();
+
+  // drawPoint(...getXY(0, 0));
+  // drawPoint(...getXY(70, -10));
+  // drawPoint(...getXY(50, 50));
+  // drawPoint(...getXY(6.2529, -75.5646));
+  navigator.geolocation.watchPosition((data) => {
+    drawPoint(...getXY(data.coords.latitude, data.coords.longitude));
+  }, (err) => {
+    console.error(err);
+  });
+
+
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', () => isDrawing = false);
+  canvas.addEventListener('mouseout', () => isDrawing = false);
+
+</script>
+
+
+</html>
