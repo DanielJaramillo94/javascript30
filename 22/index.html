@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Click if u can</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="rules">
+    <p>Rules!</p>
+    <span>Click on the highlighted element to get into the next level!</span>
+  </div>
+  <style>
+    .rules {
+      margin: 0 auto;
+      max-width: 500px;
+    }
+    .rules p {
+      font-size: 3em;
+      color: red;
+      font-weight: bolder;
+      margin: 50px 0 0 0;
+      text-shadow: 2px 2px 5px black;
+    }
+  </style>
+
+    <nav>
+      <ul class="menu">
+        <li><a href="">Home</a></li>
+        <li><a href="">Order Status</a></li>
+        <li><a href="">Tweets</a></li>
+        <li><a href="">Read Our History</a></li>
+        <li><a href="">Contact Us</a></li>
+      </ul>
+    </nav>
+
+    <div class="wrapper">
+      <p>Lorem ipsum dolor sit amet, <a href="">consectetur</a> adipisicing elit. Est <a href="">explicabo</a> unde natus necessitatibus esse obcaecati distinctio, aut itaque, qui vitae!</p>
+      <p>Aspernatur sapiente quae sint <a href="">soluta</a> modi, atque praesentium laborum pariatur earum <a href="">quaerat</a> cupiditate consequuntur facilis ullam dignissimos, aperiam quam veniam.</p>
+      <p>Cum ipsam quod, incidunt sit ex <a href="">tempore</a> placeat maxime <a href="">corrupti</a> possimus <a href="">veritatis</a> ipsum fugit recusandae est doloremque? Hic, <a href="">quibusdam</a>, nulla.</p>
+      <p>Esse quibusdam, ad, ducimus cupiditate <a href="">nulla</a>, quae magni odit <a href="">totam</a> ut consequatur eveniet sunt quam provident sapiente dicta neque quod.</p>
+      <p>Aliquam <a href="">dicta</a> sequi culpa fugiat <a href="">consequuntur</a> pariatur optio ad minima, maxime <a href="">odio</a>, distinctio magni impedit tempore enim repellendus <a href="">repudiandae</a> quas!</p>
+    </div>
+
+<script>
+  const triggers = document.querySelectorAll('a');
+  const highlight = document.createElement('span');
+  const root = document.documentElement;
+
+  const basicHighlightColor = 'white';
+  const hoverHighlightColor = 'tomato';
+
+  let difficulty = 1;
+  let hasPlayerWonLevel = false;
+  let activeElement = null;
+
+  highlight.classList.add('highlight');
+  document.body.appendChild(highlight);
+
+  function highlightLink(link) {
+    const linkCoords = link.getBoundingClientRect();
+    const coords = {
+      width: linkCoords.width,
+      height: linkCoords.height,
+      top: linkCoords.top + window.scrollY,
+      left: linkCoords.left + window.scrollX
+    };
+
+    highlight.style.width = `${coords.width}px`;
+    highlight.style.height = `${coords.height}px`;
+    highlight.style.transform = `translate(${coords.left}px, ${coords.top}px)`;
+
+  }
+
+  function delay_x_seconds(x) {
+    return new Promise(resolve => {
+      setTimeout(_ => {
+        resolve('Time delayed :)');
+      }, x*1000);
+    })
+  }
+
+  async function boot() {
+    while (true) {
+      for (let i = 0; i < triggers.length; i++) {
+        if (hasPlayerWonLevel) {
+          hasPlayerWonLevel = false;
+          i = 0;
+        }
+        await delay_x_seconds(difficulty);
+        let link = triggers[i];
+        activeElement = link;
+        root.style.setProperty('--highlight-color', basicHighlightColor);
+        highlightLink(link);
+        if (isMouseOverLink(link)) {
+          root.style.setProperty('--highlight-color', hoverHighlightColor);
+        }
+      }
+    }
+  }
+
+  function playerWonLevel() {
+    // console.log('Hi?');
+    console.log(difficulty);
+    hasPlayerWonLevel = true;
+    if (difficulty - 0.2 <= 0.1) {
+      difficulty = difficulty - 0.05;
+    } else {
+      difficulty = difficulty - 0.2;
+    }
+
+    if (difficulty < 0.07) {
+      difficulty = 1;
+    }
+    
+  }
+
+  function isMouseOverLink(link) {
+   const c = window.getComputedStyle(link).getPropertyValue('border-top-style');
+   return c === 'hidden';
+  }
+
+  function ankerClicked(e) {
+    e.preventDefault();
+    const currentColor = getComputedStyle(root).getPropertyValue('--highlight-color');
+    // return currentColor === hoverHighlightColor;
+    if (currentColor === hoverHighlightColor)
+      playerWonLevel();
+  }
+
+  function enterOnAnker(e) {
+    console.log('enter');
+    console.log(activeElement);
+    console.log(this);
+    if (activeElement === this) {
+      console.log('Hi');
+      root.style.setProperty('--highlight-color', hoverHighlightColor);
+    }
+  }
+
+  boot();
+
+  triggers.forEach(a => a.addEventListener('click', ankerClicked));
+  triggers.forEach(a => a.addEventListener('mouseenter', enterOnAnker));
+
+</script>
+<style>
+  :root {
+    --highlight-color: tomato;
+    --color2: tomato;
+  }
+
+  .highlight {
+    transition: all 0.2s;
+    border-bottom: 2px solid var(--highlight-color);
+    position: absolute;
+    top: 0;
+    background: var(--highlight-color);
+    left: 0;
+    z-index: -1;
+    border-radius: 20px;
+    display: block;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+</style>
+</body>
+</html>
+
