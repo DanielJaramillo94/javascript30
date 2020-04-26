@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Understanding JavaScript's Capture</title>
+</head>
+<body class="bod">
+
+  <div class="one element">
+    <span style="font-size: 3em; font-weight: bolder;">1</span>
+    <div class="two element">
+      <span style="font-size: 3em; font-weight: bolder;">2</span>
+      <div class="three element">
+        <span style="font-size: 3em; font-weight: bolder;">3</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat" style="padding: 20px;">
+    <div class="static">
+      <p>
+        Let's understand JS event bubbling, capturing and once little better.
+      </p>
+      <p>
+        Play around with the options on each section and see how the response below changes!
+      </p>
+      <p>
+        Note that the initial setup is the default JS click event behavior.
+      </p>
+      <span><a href="https://javascript.info/bubbling-and-capturing">Here</a> is a nice explanation if you want to understand better how it works. 📚📚</span>
+      <hr>
+      <hr>
+      <p>
+        Check out the <span style="font-weight: bolder;">console</span> to see how these options affects the click event behavior on each element
+      </p>
+    </div>
+
+    <span>Outter div</span>
+      <div class="options one">
+        <div>
+          <span>Stop propagation</span>
+          <input type="checkbox" class="prop">
+        </div>
+        <div>
+          <span>Enable capturing</span>
+          <input type="checkbox" class="capturing">
+        </div>
+        <div>
+          <span>Enable bubbling</span>
+          <input type="checkbox" class="bubbling" checked="true">
+        </div>
+      </div>
+
+    <span>Middle div</span>
+    <div class="options two">
+      <div>
+        <span>Stop propagation</span>
+        <input type="checkbox" class="prop">
+      </div>
+      <div>
+        <span>Enable capturing</span>
+        <input type="checkbox" class="capturing">
+      </div>
+      <div>
+        <span>Enable bubbling</span>
+        <input type="checkbox" class="bubbling" checked="true">
+      </div>
+    </div>
+
+    <span>Inner div</span>
+    <div class="options three">
+      <div>
+        <span>Stop propagation</span>
+        <input type="checkbox" class="prop">
+      </div>
+      <div>
+        <span>Enable capturing</span>
+        <input type="checkbox" class="capturing">
+      </div>
+      <div>
+        <span>Enable bubbling</span>
+        <input type="checkbox" class="bubbling" checked="true">
+      </div>
+    </div>
+  </div>
+<script>
+  const divs = document.querySelectorAll('.element');
+  const button = document.querySelector('button');
+
+  async function handleCapture(e) {
+    const elClass = this.classList[0];
+    const prop = document.querySelector(`.${elClass} .prop`).checked;
+    const capturing = document.querySelector(`.${elClass} .capturing`).checked;
+
+    if(!capturing) return;
+
+    console.log(this.childNodes[1].innerHTML);
+    if (prop) e.stopPropagation();
+  }
+
+  async function handleBubble(e) {
+    const elClass = this.classList[0];
+    const prop = document.querySelector(`.${elClass} .prop`).checked;
+    const bubbling = document.querySelector(`.${elClass} .bubbling`).checked;
+
+    if(!bubbling) return;
+
+    console.log(this.childNodes[1].innerHTML);
+    if (prop) e.stopPropagation();
+    
+  }
+
+  divs.forEach((div, i) => {
+    div.addEventListener('click', handleCapture, {capture: true});
+    div.addEventListener('click', handleBubble);
+  });
+
+</script>
+</body>
+<style>
+  html {
+    box-sizing: border-box;
+  }
+  
+  *, *:before, *:after { 
+    box-sizing: inherit; 
+  }
+
+  div.element {
+    cursor: pointer;
+  }
+
+  div.element {
+    width: 100%;
+    padding: 100px;
+  }
+
+  .options{
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .options:hover {
+    cursor: default;
+  }
+
+  .options > div{
+    display: flex;
+    flex-direction: column;
+  }
+
+  .one {
+    background: thistle;
+    flex:2;
+  }
+
+  .two {
+    background: mistyrose;
+  }
+
+  .three {
+    background: coral;
+  }
+
+  .bod {
+    display: flex;
+  }
+</style>
+</html>
